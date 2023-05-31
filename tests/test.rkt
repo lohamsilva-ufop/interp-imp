@@ -1,6 +1,7 @@
 #lang interp-imp
 
 print 4 + 3;
+print 4 + 3 + 3 - 2 * 3;
 print 4 - 3;
 print 4 * 3;
 print 4 / 2;
@@ -22,3 +23,29 @@ print igual;
 
 boolean complemento := !true;
 print complemento;
+
+if 2 < 3 then
+begin
+print 3 + 3;
+end
+
+else
+
+begin
+print 4 + 4;
+end
+
+
+int valor := 0;
+while valor < 5 do
+begin
+valor := valor + 1;
+print valor;
+end
+
+
+for int i := 0 to 5 do
+begin
+i := i + 1;
+print i;
+end

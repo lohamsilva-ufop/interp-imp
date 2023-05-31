@@ -10,7 +10,11 @@
   (value)
   #:transparent)
 
-(struct var
+(struct type
+  (value)
+  #:transparent)
+
+(struct evar
   (id)
   #:transparent)
 
@@ -49,7 +53,7 @@
 ; statement syntax
 
 (struct assign
-  (var expr)
+  (type var expr)
   #:transparent)
 
 (struct sprint

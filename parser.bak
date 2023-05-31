@@ -22,17 +22,17 @@
    (grammar
     (statements [() '()]
                 [(statement statements) (cons $1 $2)])
-    (statement [(IDENTIFIER ASSIGN expr SEMI) (assign (var $1) $3)]
+    (statement [(type IDENTIFIER ASSIGN expr SEMI) (assign $1 (evar $2) $4)]
                [(PRINT expr SEMI) (sprint $2)]
                [(IF expr THEN block ELSE block) (eif $2 $4 $6)]
                [(WHILE expr DO block) (ewhile $2 $4)]
                [(FOR expr DO block) (ewhile $2 $4)]
-               [(INPUT IDENTIFIER SEMI) (input (var $2))])
+               [(INPUT IDENTIFIER SEMI) (input (evar $2))])
     (block [(BEGIN statements END) $2])
     (expr  [(NUMBER) (value $1)]
-           [(IDENTIFIER) (var $1)]
-           [(false) (value #f)]
-           [(true) (value #t)]
+           [(IDENTIFIER) (evar $1)]
+           [(FALSE) (value #f)]
+           [(TRUE) (value #t)]
            [(expr ADD expr) (add $1 $3)]
            [(expr SUBTRACT expr) (minus $1 $3)]
            [(expr PRODUCT expr) (mult $1 $3)]
@@ -41,8 +41,10 @@
            [(expr EQ expr) (eeq $1 $3)]
            [(expr AND expr) (eand $1 $3)]
            [(NOT expr) (enot $2)]
-           [(LPAREN expr RPAREN) $2]))
-   ))
+           [(LPAREN expr RPAREN) $2])
+
+    (type [(INT) (type 'int)]
+          [(BOOLEAN) (type 'boolean)]))))
 
 (define (parse ip)
   (imp-parser (lambda () (next-token ip))))

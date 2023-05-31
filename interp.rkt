@@ -15,6 +15,29 @@
 (define (search-value env v)
   (let ([value (hash-ref env (evar-id v))]) value))
 
+(define (eval-if env econd then-block else-block)
+  (let ([result-econd (eval-expr env econd)])
+     (if (eq? #t result-econd)
+         (eval-stmts env then-block)
+         (eval-stmts env else-block))))
+
+(define (eval-while env econd block)
+  (let ([result-econd (eval-expr env econd)])
+     (if (eq? #t result-econd)
+         (begin
+           (let ([nenv (eval-stmts env block)])
+           (eval-while nenv econd block)))
+          env)))
+
+(define (eval-for env block init end)
+  (if (< init end)
+      (begin
+        (let ([nenv (eval-stmts env block)]
+              [init (+ init 1)])
+            (eval-for nenv block init end)))
+      env))
+
+         
 ;para todas as expressões:
 ;premissas: expressão reduz a um valor
 ;conclusoes: operações sobre os valores.
@@ -34,11 +57,19 @@
 (define (eval-stmt env s)
   (match s
     [(assign t v e1) (eval-assign env v e1)]
+    [(eassign v e1) (eval-assign env v e1)]
     [(sprint e1)
      (let ([v (eval-expr env e1)])
        (begin
          (displayln  v)
-         env))]))
+         env))]
+    [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
+    [(ewhile econd block) (eval-while env econd block)]
+    [(efor (assign t v ex) e1 block)
+        (let* ([nenv (eval-stmt env (assign t v ex))]
+              [init (eval-expr nenv ex)]
+              [end  (eval-expr nenv e1)])
+          (eval-for nenv block init end))]))
 
 (define (eval-stmts env blk)
   (match blk

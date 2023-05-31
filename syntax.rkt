@@ -56,6 +56,10 @@
   (type var expr)
   #:transparent)
 
+(struct eassign
+  (var expr)
+  #:transparent)
+
 (struct sprint
   (expr)
   #:transparent)
@@ -67,5 +71,12 @@
 (struct ewhile
   (econd block)
   #:transparent)
+
+(struct efor
+  (init expr block)
+  #:transparent)
+
+
+
 
 (provide (all-defined-out))

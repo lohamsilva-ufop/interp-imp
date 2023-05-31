@@ -17,7 +17,7 @@
    #f
    `(module imp-mod racket
       ,(let ([ast (parse port)])
-      (displayln (type-check ast))
+      ;(displayln (type-check ast))
       (finish (imp-interp ast))))))
 
 (define (finish env)
