@@ -1,6 +1,8 @@
 #lang racket
 
-(require "syntax.rkt" "interp.rkt")
+(require "syntax.rkt")
+(define (get-type ctx v)
+  (let ([type (hash-ref ctx (evar-id v))]) type))
 
 (define (check-value-or-variable ctx e)
   (match e
@@ -63,8 +65,8 @@
     [(sprint e1)
        (let ([tl (type-check-expr ctx e1)])
              ctx)]
-     [(read evar)
-       (let ([tl (type-check-expr ctx evar)])
+     [(read-v v)
+       (let ([tl (type-check-expr ctx (evar v))])
              ctx)]
     [(eif econd then-block else-block)
         (let ([expr (type-check-expr ctx econd)])
@@ -97,4 +99,4 @@
 (define (type-check prog)
   (type-check-stmts (make-immutable-hash) prog))
 
-(provide type-check type-check-expr)
+(provide get-type type-check type-check-expr)

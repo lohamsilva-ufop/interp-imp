@@ -2,6 +2,9 @@
 
 (require "syntax.rkt" "interp.rkt")
 
+(define (get-type env v)
+  (let ([type (hash-ref env (evar-id v))]) type))
+
 (define (check-value-or-variable ctx e)
   (match e
       [(evar e1) (hash-ref ctx e1)]
@@ -63,10 +66,16 @@
     [(sprint e1)
        (let ([tl (type-check-expr ctx e1)])
              ctx)]
+     [(read-v v)
+       (let ([tl (type-check-expr ctx (evar v))])
+             ctx)]
     [(eif econd then-block else-block)
         (let ([expr (type-check-expr ctx econd)])
              (if (eq? expr 'boolean)
-                 (type-check-stmts ctx then-block)
+                (begin
+                  (type-check-stmts ctx then-block)
+                  (type-check-stmts ctx else-block)
+                  ctx)
                  (error "O comando espera uma expressão booleana, porém recebeu outro tipo de dados. (COM: IF)")))]
     [(ewhile econd block)
         (let ([expr (type-check-expr ctx econd)])

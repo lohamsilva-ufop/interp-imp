@@ -25,6 +25,7 @@
    WHILE
    FOR
    DO
+   TO
    BEGIN
    END
    PRINT
@@ -57,6 +58,7 @@
    ["while" (token-WHILE)]
    ["for" (token-FOR)]
    ["do" (token-DO)]
+   ["to" (token-TO)]
    ["begin" (token-BEGIN)]
    ["end" (token-END)]
    ["print" (token-PRINT)]
