@@ -3,5 +3,13 @@
 int a := 8;
 read a;
 
-int b := 7;
+int b := 9;
 read b;
+
+int y := 7;
+
+int c := 10;
+read c;
+
+int z := 4;
+

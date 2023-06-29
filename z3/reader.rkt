@@ -19,8 +19,8 @@
    `(module imp-mod racket
       ,(let ([ast (parse port)])
       (displayln (type-check ast))
-      (imp-interp ast)))))
-      ;(get-read (type-check ast) ast)))))
+      (imp-interp ast)
+       (get-read (type-check ast) ast)))))
 
 (define (finish env)
   (displayln "Finished!"))
