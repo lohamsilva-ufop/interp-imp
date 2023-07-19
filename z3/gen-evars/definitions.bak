@@ -1,19 +1,43 @@
 #lang racket
 
-(require "syntax.rkt" "type-check.rkt" "interp.rkt")
+(require "syntax.rkt"
+         "type-check.rkt"
+         "interp.rkt"
+         "out/parser.rkt")
 (require racket/format)
 
+(define (create-assert-conditionals op e1 e2 list-assert)
+  (cons (string-append "(assert (" op (~a e1) " , " (~a e2) "))") list-assert))
+
+(define (verify-conditionals econd then-block else-block list-assert)
+   (match econd
+     [(lt e1 e2) (create-assert-conditionals ">" (evar-id e1) (value-value e2) list-assert)])
+   list-assert)
+
+(define (build-file-script econd then-block else-block)
+  (let* ([string-assets-econd (verify-conditionals econd then-block else-block '())]
+         [text-script (string append
+                             string-assets-econd
+                             "(check-sat) "
+                             "(get-model)")]
+         [script-file (create-script-file text-script)]
+         [cmd (string-append "z3 " (path->string script-file))]
+         [res (with-output-to-string (lambda () (system cmd)))])
+         (displayln res)))
+
 (define (create-script-file text-script)
-   (let*  ([path-file (make-temporary-file "script-~a.z3")]
+   (let*  ([path-file (string->path "script.z3")]
+           ;SOBRESCRITA, VERIFICAR DEPOIS: (REPLACE)
            [out (open-output-file path-file
                                   #:mode 'text
-                                  #:exists 'truncate)])
+                                  #:exists 'replace)])
      (begin
       (displayln text-script out)
       (close-output-port out)
       path-file)))
 
 (define (verify-node node ctx varlist)
+  ;percorrer if, while, for.
   (match node
     [(read-v v1) (begin
                    (let*  ([type (get-type ctx v1)]
@@ -22,7 +46,7 @@
     [(assign t v e1) varlist]
     [(sprint e1) varlist]
     [(read-v v1) varlist]              
-    [(eif econd then-block else-block) varlist]
+    [(eif econd then-block else-block) (build-file-script econd then-block else-block)]
     [(ewhile econd block) varlist]
     [(efor (assign t v ex) e1 block) varlist]))
 
@@ -54,7 +78,8 @@
           [res (with-output-to-string (lambda () (system cmd)))])
            (begin
            (displayln text-script)
-           (displayln res))))
+           (displayln res)
+           (cons text-script (parse (open-input-string res))))))
 
                         
 (define (build-read-script ast ctx varlist)
