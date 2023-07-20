@@ -5,7 +5,8 @@
          "syntax.rkt"
          "type-check.rkt"
          "./gen-evars/definitions.rkt"
-         "./gen-evars/gen.rkt")
+         "./gen-evars/gen.rkt"
+         "./gen-econds/definitions.rkt")
 
 (provide (rename-out [imp-read read]
                      [imp-read-syntax read-syntax]))
@@ -20,10 +21,10 @@
    #f
    `(module imp-mod racket
       ,(let* ([ast (parse port)]
-              [ctx (type-check ast)]
-              [scz3 (get-read ctx ast)])
-         (displayln "Finish")))))
-     ;  (get-tree-to-build-script (car scz3) (cdr scz3) '())))))
+              [ctx (type-check ast)])
+              ;[scz3 (get-read ctx ast)])
+         (build-ifs-script ast ctx)))))
+    
 
 (define (finish env)
   (displayln "Finished!"))

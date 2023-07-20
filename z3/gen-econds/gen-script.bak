@@ -1,0 +1,7 @@
+#lang racket
+
+(require "../syntax.rkt"
+         "../type-check.rkt"
+         "../interp.rkt"
+         "../out/parser.rkt"
+         "../gen-evars/gen.rkt")
