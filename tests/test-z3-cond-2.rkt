@@ -25,14 +25,6 @@ begin
    if x < 3 then
        begin
            print 3 + 3;
-           if x < 4 then
-             begin
-               print 3 + 3;
-             end
-         else
-            begin
-               print 4 + 4;
-            end 
        end
    else
        begin

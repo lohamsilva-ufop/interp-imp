@@ -1,26 +1,45 @@
 #lang racket
 
-(require "syntax.rkt"
-         "type-check.rkt"
-         "interp.rkt"
-         "out/parser.rkt")
+(require "../syntax.rkt"
+         "../type-check.rkt"
+         "../interp.rkt"
+         "../out/parser.rkt"
+         "../gen-evars/gen.rkt")
+
 (require racket/format)
 
-(define (create-assert-conditionals op e1 e2 list-assert)
-  (cons (string-append "(assert (" op (~a e1) " , " (~a e2) "))") list-assert))
+(struct tree-econds (econd true-block else-block) #:transparent)
 
-(define (verify-conditionals econd then-block else-block list-assert)
+(define (check-variables econd varlist ctx)
    (match econd
-     [(lt e1 e2) (create-assert-conditionals ">" (evar-id e1) (value-value e2) list-assert)])
-   list-assert)
+         [(lt e1 e2) (let* ([type (get-type ctx e1)]
+                            [par (cons (evar-id e1) type)])
+                       (cons par varlist))]))
+                    
+(define (check-econd node)
+  (match node
+   [(lt e1 e2)   (string-append "(< " (evar-id e1) "  " (~a (value-value e2)) ")")]))
 
-(define (build-file-script econd then-block else-block)
-  (let* ([string-assets-econd (verify-conditionals econd then-block else-block '())]
-         [text-script (string append
-                             string-assets-econd
-                             "(check-sat) "
-                             "(get-model)")]
-         [script-file (create-script-file text-script)]
-         [cmd (string-append "z3 " (path->string script-file))]
-         [res (with-output-to-string (lambda () (system cmd)))])
-         (displayln res)))
+
+;(define (build-script econd list-then-block list-else-block varlist)
+ ; (gen-script-then-block-true econd list-then-block varlist)
+  ;(gen-script-then-block-false econd list-then-block varlist)
+  ;(gen-script-else-block-true econd list-else-block varlist)
+ ; (gen-script-else-block-false econd list-else-block varlist))
+
+
+(define (get-eifs ast)
+   (match ast
+    ['() '()]
+    [(cons (read-v v1) astrest) (get-eifs astrest)]
+    [(cons (assign t v e1) astrest) (get-eifs astrest)]
+    [(cons (sprint e1) astrest) (get-eifs astrest)]
+    [(cons (read-v v1) astrest) (get-eifs astrest)]              
+    [(cons (eif econd then-block else-block) astrest) (let* ([tr (get-eifs then-block)]
+                                                       [tl (get-eifs else-block)])
+                                                       (cons (tree-econds econd tr tl) (get-eifs astrest)))]
+    [(cons (ewhile econd block) astrest) (get-eifs astrest)]
+    [(cons (efor (assign t v ex) e1 block) astrest) (get-eifs astrest)]))
+
+
+(provide get-eifs (struct-out tree-econds)) 
