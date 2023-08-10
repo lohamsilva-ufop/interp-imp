@@ -5,7 +5,8 @@
          "../interp.rkt"
          "../out/parser.rkt"
          "../gen-evars/gen.rkt"
-         "definitions.rkt")
+         "definitions.rkt"
+          "../gen-atr/gen-atr-script.rkt")
 
 (require racket/date)
 
@@ -26,7 +27,7 @@
           [res (with-output-to-string (lambda () (system cmd)))])
            (begin
            (displayln text-script)
-           ;(displayln res)
+       ;  (displayln res)
            ))))
 
 (define (split-econds str)
@@ -82,23 +83,26 @@
     [(cons f rest) (let([ new (gen-script-else-block f str-cond)])
                       (gen-script-eifs-else rest new))]))
 
-(define (execute-gen-script-econds florest str-cond ctx)
+(define (analise-end-then end)
+  (if (equal? 8 (string-length end))
+       end
+      (string-append "(and " end ")")))
+
+(define (execute-gen-script-econds ast florest str-cond ctx env)
   (let
     ([str-then (gen-script-eifs-then florest str-cond)])
     (if (equal? 9 (string-length str-then))
         (let* 
         ([str-text-script-then
            (string-append
-           ;(gen-str-variables florest ctx)
-           "(declare-const x Int)"
+           (get-assign ast "" ctx env)
           " (assert " str-then ")"
           "(check-sat) "
          "(get-model)")]
 
           [str-text-script-else
            (string-append
-           ;(gen-str-variables florest ctx)
-           "(declare-const x Int)"
+           (get-assign ast "" ctx env)
           " (assert (not " str-then "))"
           "(check-sat) "
          "(get-model)")])
@@ -106,11 +110,11 @@
           (begin
             (gen-script str-text-script-then)
             (gen-script str-text-script-else)))
-        (gen-script-eifs-more-then-one str-then "" florest))))
+        (gen-script-eifs-more-then-one ast str-then "" florest ctx env))))
         
         
 
-(define (gen-script-eifs-more-then-one str-then str-cond florest)
+(define (gen-script-eifs-more-then-one ast str-then str-cond florest ctx env)
    (let*
     ([init-then (car (split-econds str-then))]
      [end-then  (cdr (split-econds str-then))]
@@ -120,34 +124,30 @@
      
      [str-text-script-then-true
       (string-append
-        ;(gen-str-variables florest ctx)
-       "(declare-const x Int)"
+       (get-assign ast "" ctx env)
         " (assert (and " str-then "))"
         "(check-sat) "
         "(get-model)")]
 
      [str-text-script-then-false
       (string-append
-        ;(gen-str-variables florest ctx)
-       "(declare-const x Int)"
-        " (assert (and " init-then "  (not " end-then ")))"
+       (get-assign ast "" ctx env)
+        " (assert (and " init-then "  (not " (analise-end-then end-then) ")))"
         "(check-sat) "
         "(get-model)")]
 
      
      [str-text-script-else-true
       (string-append
-       ;(gen-str-variables florest ctx)
-       "(declare-const x Int)"
-        " (assert (and (not " init-else ") " end-else "))"
+       (get-assign ast "" ctx env)
+        " (assert (and (not " init-else ") " (analise-end-then end-else) "))"
         "(check-sat) "
         "(get-model)")]
 
      [str-text-script-else-false
       (string-append
-       ;(gen-str-variables florest ctx)
-       "(declare-const x Int)"
-        " (assert (and (not " init-else ") (not " end-else ")))"
+       (get-assign ast "" ctx env)
+        " (assert (and (not " init-else ") (not " (analise-end-then end-else) ")))"
         "(check-sat) "
         "(get-model)")])
     (begin

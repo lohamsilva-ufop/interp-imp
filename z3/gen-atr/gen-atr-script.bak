@@ -1,0 +1,28 @@
+#lang racket
+
+(require "../syntax.rkt"
+         "../type-check.rkt"
+         "../interp.rkt")
+
+(require racket/date)
+
+(define (build-str-assign v e1 str-assign ctx)
+  (string-append
+   str-assign
+   (string-append "(declare-const " (evar-id v) " " (string-titlecase(~a (get-type ctx v))) ") ")
+  "(assert (= " (evar-id v) " " (~a (value-value e1)) "))"))
+
+
+(define (get-assign ast str-assign ctx)
+   (match ast
+    ['() str-assign]
+    [(cons (read-v v1) astrest) (get-assign astrest str-assign ctx)]
+    [(cons (assign t v e1) astrest) (get-assign astrest (build-str-assign v e1 str-assign ctx) ctx)]
+    [(cons (sprint e1) astrest) (get-assign astrest str-assign ctx)]
+    [(cons (read-v v1) astrest) (get-assign astrest str-assign ctx)]              
+    [(cons (eif econd then-block else-block) astrest) (get-assign astrest str-assign ctx)]
+    [(cons (ewhile econd block) astrest) (get-assign astrest str-assign ctx)]
+    [(cons (efor (assign t v ex) e1 block) astrest) (get-assign astrest str-assign ctx)]))
+
+
+(provide (all-defined-out))

@@ -22,10 +22,11 @@
    #f
    `(module imp-mod racket
       ,(let* ([ast (parse port)]
-              [ctx (type-check ast)])
+              [ctx (type-check ast)]
+              [env (imp-interp ast)])
               ;[scz3 (get-read ctx ast)])
          ;(build-ifs-script ast ctx)))))
-          (execute-gen-script-econds (get-eifs ast) "" ctx)))))
+          (execute-gen-script-econds ast (get-eifs ast) "" ctx env)))))
     
 
 (define (finish env)

@@ -6,6 +6,7 @@
          "type-check.rkt"
          "./gen-evars/definitions.rkt"
          "./gen-evars/gen.rkt"
+         "./gen-econds/gen-script.rkt"
          "./gen-econds/definitions.rkt")
 
 (provide (rename-out [imp-read read]
@@ -24,7 +25,7 @@
               [ctx (type-check ast)])
               ;[scz3 (get-read ctx ast)])
          ;(build-ifs-script ast ctx)))))
-         (displayln (get-eifs-2 ast))))))
+          (execute-gen-script-econds ast (get-eifs ast) "" ctx)))))
     
 
 (define (finish env)

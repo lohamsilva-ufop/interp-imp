@@ -1,8 +1,11 @@
 #lang interp-imp/z3/testz3
 int x := 1;
 
+
+
 if x < 10 then
 begin
+ 
    if x < 9 then
        begin
          if x < 8  then

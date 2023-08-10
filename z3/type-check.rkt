@@ -71,10 +71,10 @@
     [(eif econd then-block else-block)
         (let ([expr (type-check-expr ctx econd)])
              (if (eq? expr 'boolean)
-                (begin
-                  (type-check-stmts ctx then-block)
-                  (type-check-stmts ctx else-block)
-                  ctx)
+                (let*
+                  ([ctx-1 (type-check-stmts ctx then-block)]
+                   [ctx-2 (type-check-stmts ctx-1 else-block)])
+                  ctx-2)
                  (error "O comando espera uma expressão booleana, porém recebeu outro tipo de dados. (COM: IF)")))]
     [(ewhile econd block)
         (let ([expr (type-check-expr ctx econd)])

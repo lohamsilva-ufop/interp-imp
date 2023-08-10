@@ -20,14 +20,6 @@
   (match node
    [(lt e1 e2)   (string-append "(< " (evar-id e1) "  " (~a (value-value e2)) ")")]))
 
-
-;(define (build-script econd list-then-block list-else-block varlist)
- ; (gen-script-then-block-true econd list-then-block varlist)
-  ;(gen-script-then-block-false econd list-then-block varlist)
-  ;(gen-script-else-block-true econd list-else-block varlist)
- ; (gen-script-else-block-false econd list-else-block varlist))
-
-
 (define (get-eifs ast)
    (match ast
     ['() '()]

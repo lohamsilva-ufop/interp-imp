@@ -6,14 +6,16 @@
 ;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
 ;a atribuição reduz para um novo ambiente (new-env)
 (define (eval-assign env v e)
-  (let* ([expr-result (eval-expr env e)]
-        [new-env (hash-set env (evar-id v) expr-result)])
-    new-env))
+  (hash-set env (evar-id v) (value e)))
 
 ;premissa: expressão reduz a um valor
 ;conclusao: reduz ao ambiente
 (define (search-value env v)
   (let ([value (hash-ref env (evar-id v))]) value))
+
+(define (read-value env v1)
+  (let ([x (read)])
+     (display (hash-set env (evar-id v1) x))))
 
 (define (eval-if env econd then-block else-block)
   (let ([result-econd (eval-expr env econd)])
@@ -63,7 +65,7 @@
        (begin
          (displayln  v)
          env))]
-    [(read e1)]
+    [(read-v v1) (read-value env v1)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
     [(ewhile econd block) (eval-while env econd block)]
     [(efor (assign t v ex) e1 block)

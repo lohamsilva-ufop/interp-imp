@@ -6,7 +6,7 @@
 ;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
 ;a atribuição reduz para um novo ambiente (new-env)
 (define (eval-assign env v e)
-  (hash-set env (evar-id v) (value-value e)))
+  (hash-set env (evar-id v) (eval-expr env e)))
 
 ;premissa: expressão reduz a um valor
 ;conclusao: reduz ao ambiente
