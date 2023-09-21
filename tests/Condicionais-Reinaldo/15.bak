@@ -1,0 +1,33 @@
+#lang interp-imp/python/plugin
+
+A = input("Digite o valor A: ")
+B = input("Digite o valor B: ")
+C = input("Digite o valor C: ")
+
+
+acb
+bac
+bca
+cab
+cba
+
+if (A > B) and (A > C) and (B> C) :{
+   print (A)
+   print (B)
+   print (C)
+} else:{
+
+
+
+
+        
+   if (B > A) and (B > C) and (A > C) :{
+  print  (B)
+   print (A)
+   print (C)
+   } else :{
+      print (C)
+      print (B)
+      print (C)
+   }
+}

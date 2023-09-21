@@ -64,8 +64,16 @@
   (expr)
   #:transparent)
 
+(struct read-v
+  (evar)
+  #:transparent)
+
 (struct eif
   (econd then-block else-block)
+  #:transparent)
+
+(struct eif-only-then
+  (econd then-block)
   #:transparent)
 
 (struct ewhile

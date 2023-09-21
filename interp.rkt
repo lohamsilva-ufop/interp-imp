@@ -23,6 +23,12 @@
          (eval-stmts env then-block)
          (eval-stmts env else-block))))
 
+(define (eval-if-only-then env econd then-block)
+  (let ([result-econd (eval-expr env econd)])
+     (if result-econd
+         (eval-stmts env then-block)
+          env)))
+
 (define (eval-while env econd block)
   (let ([result-econd (eval-expr env econd)])
      (if result-econd
@@ -50,15 +56,19 @@
    [(mult e1 e2) (* (eval-expr env e1) (eval-expr env e2))]
    [(divv e1 e2) (/ (eval-expr env e1) (eval-expr env e2))]
    [(lt e1 e2)   (< (eval-expr env e1) (eval-expr env e2))]
+   [(bt e1 e2)   (> (eval-expr env e1) (eval-expr env e2))]
+   [(lte e1 e2)  (<= (eval-expr env e1) (eval-expr env e2))]
+   [(bte e1 e2)  (>= (eval-expr env e1) (eval-expr env e2))]
    [(eeq e1 e2)  (eq? (eval-expr env e1) (eval-expr env e2))]
    [(eand e1 e2) (and (eval-expr env e1) (eval-expr env e2))]
+   [(eor e1 e2)  (or (eval-expr env e1) (eval-expr env e2))]
    [(enot e1) (not (eval-expr env e1))]
    [(evar e1) (search-value env (evar e1))]
    [(value val) val]))
 
 (define (eval-stmt env s)
   (match s
-    [(assign t v e1) (eval-assign env v e1)]
+   ; [(assign t v e1) (eval-assign env v e1)]
     [(eassign v e1) (eval-assign env v e1)]
     [(sprint e1)
      (let ([v (eval-expr env e1)])
@@ -67,6 +77,9 @@
          env))]
     [(read-v v1) (read-value env v1)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
+
+    [(eif-only-then econd then-block) (eval-if-only-then env econd then-block)]
+    
     [(ewhile econd block) (eval-while env econd block)]
     [(efor (assign t v ex) e1 block)
         (let* ([nenv (eval-stmt env (assign t v ex))]

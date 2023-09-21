@@ -1,0 +1,1 @@
+("8.3" ta6nt ("3557e21298937f0ebcf65a392bdc985e9faa3d9f" . "52f4e1852816b2f00f6e9c9a9d46a58edd83437d") (collects #"interp-imp" #"lexer.rkt") (collects #"parser-tools" #"lex.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"strip-context.rkt"))

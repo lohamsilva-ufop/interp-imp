@@ -1,0 +1,1 @@
+(declare-const numero1 Int) (declare-const numero2 Int) (declare-const adicao Int) (assert (= adicao ( + numero1 numero2)))(declare-const adiciona8 Int) (assert (= adiciona8 ( + adicao 8)))(declare-const subtrai5 Int) (assert (= subtrai5 ( - adicao 5))) (assert (> adicao  20))(check-sat) (get-model)
