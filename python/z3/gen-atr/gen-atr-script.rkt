@@ -1,8 +1,8 @@
 #lang racket
 
-(require "../syntax.rkt"
-         "../type-check.rkt"
-         "../interp.rkt")
+(require "../../syntax.rkt"
+         "../../type-check.rkt"
+         "../../interp.rkt")
 
 (require racket/date)
 

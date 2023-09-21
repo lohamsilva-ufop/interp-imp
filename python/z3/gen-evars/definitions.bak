@@ -22,15 +22,13 @@
   ;percorrer if, while, for.
   (match node
     [(read-v v1) (begin
-                   (let*  ([type (get-type ctx v1)]
+                   (let*  ([type "int"]
                           [new-varlist (cons (cons (evar-id v1) (string-titlecase(~a type))) varlist)])
                      new-varlist))]
-    [(assign t v e1) varlist]
+    [(eassign v e1) varlist]
     [(sprint e1) varlist]
     [(read-v v1) varlist]              
-    [(eif econd then-block else-block) varlist]
-    [(ewhile econd block) varlist]
-    [(efor (assign t v ex) e1 block) varlist]))
+    [(eif econd then-block else-block) varlist]))
 
 (define (build-string-variables string varlist)
   (if (equal? varlist '())

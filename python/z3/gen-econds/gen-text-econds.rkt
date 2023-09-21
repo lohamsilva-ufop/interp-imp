@@ -1,6 +1,6 @@
 #lang racket
-(require "../syntax.rkt"
-         "../interp.rkt"
+(require "../../syntax.rkt"
+         "../../interp.rkt"
          "../gen-evars/gen.rkt"
          "definitions.rkt"
           "../gen-atr/gen-atr-script.rkt")

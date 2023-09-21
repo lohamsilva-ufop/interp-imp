@@ -1,8 +1,8 @@
 #lang racket
 
-(require "parser.rkt"
-         "interp.rkt"
-         "syntax.rkt"
+(require "../parser.rkt"
+         "../interp.rkt"
+         "../syntax.rkt"
          "./gen-evars/definitions.rkt"
          "./gen-evars/gen.rkt"
          "./gen-econds/gen-script.rkt"
