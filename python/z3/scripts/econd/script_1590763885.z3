@@ -1,1 +1,0 @@
-(declare-const numero Int) (declare-const divide3 Int) (assert (= divide3 ( mod numero 3)))(declare-const divide7 Int) (assert (= divide7 ( mod numero 7))) (assert (and ( = divide3 0)  ( = divide7 0)))(check-sat) (get-model)

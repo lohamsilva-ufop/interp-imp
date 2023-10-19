@@ -1,10 +1,6 @@
 #lang racket
 
 (require "../parser.rkt"
-         "../interp.rkt"
-         "../syntax.rkt"
-         "./gen-evars/definitions.rkt"
-         "./gen-evars/gen.rkt"
          "./gen-econds/gen-script.rkt"
          "./gen-econds/definitions.rkt")
 
@@ -20,12 +16,12 @@
   (datum->syntax
    #f
    `(module imp-mod racket
-      ,(let* ([ast (parse port)]
+      ,(let* ([ast (parse port)])
               ;[ctx (type-check ast)]
-              [env (python-interp ast)])
+              ;[env (python-interp ast)])
               ;[scz3 (get-read ctx ast)])
          ;(build-ifs-script ast ctx)))))
-          (execute-gen-script-econds ast (get-eifs ast) "" env)))))
+          (execute-gen-script-econds ast (get-eifs ast) "")))))
     
 
 (define (finish env)

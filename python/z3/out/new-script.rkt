@@ -3,11 +3,10 @@
 (require "syntax.rkt"
          "parser.rkt"
          "../simbolic-table.rkt"
-         "new-script.rkt"
          "../gen-script/script-generator.rkt"
          "../gen-atr/gen-atr-script.rkt")
 
-(define temp-table (make-hash))
+(define new-temp-table (make-hash))
 
 (define (create-script-file text-script)
    (let*  ([path-file (string->path (string-append "../../python/z3/scripts/econd/script_" (~a (random (date->seconds (current-date)))) ".z3"))]
@@ -36,7 +35,6 @@
      "(check-sat) "
      "(get-model)")))
 
-
 (define (build-script table-in-list str)
   (match table-in-list
     ['() str]
@@ -44,37 +42,44 @@
                            ([new-str (string-append "(assert (not (= " (~a (car first)) " " (~a (cdr first)) "))) "  str)])
                              (build-script rest new-str))])) 
 
-(define (update-value-table script iteration ast)
-  (let* ([table-in-list (hash->list temp-table)]
+(define (gen-new-text-script ast)
+  (let* ([table-in-list (hash->list new-temp-table)]
          [new-str (build-script table-in-list "")]
          [res (build-text-script new-str ast)])
-    (repeat-script res ast 3)))
+    res))
+
+(define (repeat-script res ast iteration)
+  (cond
+    [(> iteration 0)
+   (let* ([tree (parse (open-input-string res))]
+          [prog (eval-prog tree ast)])
+     (repeat-script prog ast (- iteration 1)))]
+    [(equal? iteration 0)
+     (begin
+      (last-eval-prog (parse (open-input-string res)) ast)
+     (show-table))]))
 
 (define (insert-value-table ev v)
-  (begin
-  (hash-set!  temp-table (evar-id ev) (value-value v))
-  (insert-simbolic-table (evar-id ev) (value-value v))))
+  (hash-set!  new-temp-table (evar-id ev) (value-value v))
+  (update-simbolic-table (evar-id ev) (value-value v)))
 
 (define (eval-stmt s)
   (match s
     [(define-const-vars ev t v) (insert-value-table ev v)]
     [(sat-unsat v) ""]))
 
-(define (eval-prog blk ast)
+(define (last-eval-prog blk ast)
   (match blk
     ['() '()]
     [(cons s blks) (begin
                      (eval-stmt s)
-                     (eval-prog blks ast))]))
+                     (last-eval-prog blks ast))]))
 
-(define (eval-stmts blk script ast)
+(define (eval-prog blk ast)
   (match blk
-    ['() (update-value-table script 4 ast)]
+    ['() (gen-new-text-script ast)]
     [(cons s blks) (begin
                      (eval-stmt s)
-                     (eval-stmts blks script ast))]))
+                     (eval-prog blks ast))]))
 
-(define (outz3-interp prog script ast)
-  (eval-stmts prog script ast))
-
-(provide outz3-interp)
+(provide repeat-script)

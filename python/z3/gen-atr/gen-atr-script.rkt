@@ -25,34 +25,34 @@
    [(evar e1) (~a e1)]
    [(value val) (~a val)]))
 
-(define (build-str-input v str-assign env)
+(define (build-str-input v str-assign )
   (string-append
    str-assign
    (string-append "(declare-const " (evar-id v) " Int) ")))
 
-(define (build-str-assign v e1 str-assign env)
+(define (build-str-assign v e1 str-assign )
   (string-append
    str-assign
    (string-append "(declare-const " (evar-id v) " Int) ")
   "(assert (= " (evar-id v) " " (eval-expr-gen-atr e1) "))"))
 
 
-(define (get-assign ast str-assign env)
+(define (get-assign ast str-assign )
    (match ast
     ['() str-assign]
-    [(cons (input v1 e1) astrest) (get-assign astrest (build-str-input v1 str-assign env)  env)]
-    [(cons (eassign v e1) astrest) (get-assign astrest (build-str-assign v e1 str-assign env)  env)]
-    [(cons (sprint e1) astrest) (get-assign astrest str-assign  env)]
-    [(cons (read-v v1) astrest) (get-assign astrest str-assign  env)]
+    [(cons (input v1 e1) astrest) (get-assign astrest (build-str-input v1 str-assign )  )]
+    [(cons (eassign v e1) astrest) (get-assign astrest (build-str-assign v e1 str-assign )  )]
+    [(cons (sprint e1) astrest) (get-assign astrest str-assign  )]
+    [(cons (read-v v1) astrest) (get-assign astrest str-assign  )]
     [(cons (eif econd then-block else-block) astrest)
 
      (begin
                                                         (let*
-                                                        ([str-then (get-assign then-block ""  env)]
-                                                         [str-else (get-assign else-block ""  env)]
+                                                        ([str-then (get-assign then-block ""  )]
+                                                         [str-else (get-assign else-block ""  )]
                                                          [str-assign-efor (string-append str-assign str-then str-else)])
                                                         
-                                                       (get-assign astrest str-assign-efor  env)))]))
+                                                       (get-assign astrest str-assign-efor  )))]))
 
 
 (provide (all-defined-out))

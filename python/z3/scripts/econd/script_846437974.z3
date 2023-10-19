@@ -1,0 +1,1 @@
+(declare-const salario Int) (declare-const prestacao Int) (declare-const proporcao Int) (assert (= proporcao ( / ( * salario 30) 100)))(assert (not (= prestacao 2))) (assert (not (= salario -20))) (assert (not (= proporcao -6))) (check-sat) (get-model)

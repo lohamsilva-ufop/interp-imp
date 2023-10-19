@@ -1,0 +1,3 @@
+#lang racket
+(struct entry (inputs outputs) #:transparent)
+(define table-simbolic (make-hash))

@@ -9,59 +9,26 @@
   (EOF
    SAT
    UNSAT
-   SEMI
    LPAREN
    RPAREN
-   IF
-   THEN
-   ELSE
-   WHILE
-   FOR
-   DO
-   TO
-   BEGIN
-   END
-   PRINT
-   INPUT
-   READ
+   SUBTRACT
+   DEFINE-FUN
    INT
-   BOOLEAN
-   TRUE
-   FALSE))
+   BOOLEAN))
 
 (define next-token
   (lexer-src-pos
    [(eof) (token-EOF)]
    [(:+ #\newline whitespace)
     (return-without-pos (next-token input-port))]
-   [#\+ (token-ADD)]
    [#\- (token-SUBTRACT)]
-   [#\* (token-PRODUCT)]
-   [#\/ (token-DIVISION)]
-   [#\< (token-LT)]
-   ["==" (token-EQ)]
-   [":=" (token-ASSIGN)]
-   ["!"  (token-NOT)]
-   ["&&" (token-AND)]
-   [";"  (token-SEMI)]
    ["("  (token-LPAREN)]
    [")"  (token-RPAREN)]
-   ["if" (token-IF)]
-   ["then" (token-THEN)]
-   ["else" (token-ELSE)]
-   ["while" (token-WHILE)]
-   ["for" (token-FOR)]
-   ["do" (token-DO)]
-   ["to" (token-TO)]
-   ["begin" (token-BEGIN)]
-   ["end" (token-END)]
-   ["print" (token-PRINT)]
-   ["input" (token-INPUT)]
-   ["read" (token-READ)]
-   ["int" (token-INT)]
-   ["boolean" (token-BOOLEAN)]
-   ["true" (token-TRUE)]
-   ["false" (token-FALSE)]
+   ["sat" (token-SAT)]
+   ["unsat" (token-UNSAT)]
+   ["define-fun" (token-DEFINE-FUN)]
+   ["Int" (token-INT)]
+   ["Boolean" (token-BOOLEAN)]
    [(:: alphabetic (:* (:+ alphabetic numeric)))
     (token-IDENTIFIER lexeme)]
    [(:: numeric (:* numeric))

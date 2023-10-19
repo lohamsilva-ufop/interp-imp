@@ -9,6 +9,7 @@
   (EOF
    SAT
    UNSAT
+   SUBTRACT
    LPAREN
    RPAREN
    DEFINE-FUN
@@ -22,6 +23,7 @@
     (return-without-pos (next-token input-port))]
    ["("  (token-LPAREN)]
    [")"  (token-RPAREN)]
+   [#\- (token-SUBTRACT)]
    ["sat" (token-SAT)]
    ["unsat" (token-UNSAT)]
    ["define-fun" (token-DEFINE-FUN)]

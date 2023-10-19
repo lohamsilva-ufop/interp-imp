@@ -2,11 +2,8 @@
 
 (require "../../syntax.rkt"
          "../../interp.rkt"
-         "../out/parser.rkt"
-         "../gen-evars/gen.rkt"
          "definitions.rkt"
-         "gen-text-econds.rkt"
-          "../gen-atr/gen-atr-script.rkt")
+         "gen-text-econds.rkt")
 
 
 (define (check-econd node)
@@ -49,14 +46,14 @@
                       (gen-script-eifs-else rest new))]))
 
 
-(define (gen-script-eifs node ast env)
+(define (gen-script-eifs node ast )
   (match node
     ['() '()]
-    [ (tree-econds x y z) (gen-text x y z ast env)]))
+    [ (tree-econds x y z) (gen-text x y z ast )]))
   
-(define (execute-gen-script-econds ast florest str env)
+(define (execute-gen-script-econds ast florest str )
   (match florest
     ['() str]
-    [(cons node rest) (gen-script-eifs node ast env)]))
+    [(cons node rest) (gen-script-eifs node ast )]))
 
 (provide (all-defined-out))
