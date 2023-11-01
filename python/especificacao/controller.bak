@@ -1,0 +1,76 @@
+#lang racket
+
+(require "syntax.rkt" "table.rkt" "student-results.rkt"
+         "../gerador/parser.rkt"
+         "../gerador/interp.rkt")
+
+
+(define (executa-gabarito path)
+      (begin
+        (let*([port  (open-input-file path)]
+               [text  (string-replace (read-string 1000 port) "#lang imp-gen/gerador/gen" "")])
+               (begin
+               (gen-interp (parse (open-input-string text)) trace-fread trace-fprint)
+               (consolidate-last-entry)
+                (new-iteration)))))
+
+(define (executa-aluno path)
+      (begin
+        (let*([port  (open-input-file path)]
+               [text  (string-replace (read-string 1000 port) "#lang imp-gen/gerador/gen" "")])
+               (begin
+               (gen-interp (parse (open-input-string text)) replay-fread student-trace-fprint)
+               (new-result-instance)
+               (consolidate-result)
+               (next-line)))))
+ 
+;função que percorre a pasta com os arquivos dos alunos.
+(define (percorre-path lista path quantidade)
+  (cond
+    [(empty? (rest lista))
+       (begin
+        (display "Arquivo: ")
+        (displayln (first lista))
+        (control-execute-ex quantidade (string-append path "/" (~a(first lista))))
+        (displayln "==========================================="))]
+    [else
+      (begin
+      (display "Arquivo: ")
+      (displayln (first lista))
+      (control-execute-ex quantidade (string-append path "/" (~a(first lista))))
+      ;(display result-table)
+      (start-table-result)
+      (drop-student-result)
+      (start-replay-mode)
+      (displayln "===========================================")
+      (percorre-path (rest lista) path quantidade))]))
+
+(define (eval-expr env e)
+  (match e
+    [(value val) (cons env (value val))]))
+
+
+(define (control-execute-gab numero-execucoes gabarito)
+   (cond
+        [(> numero-execucoes 0)
+           (begin
+              (executa-gabarito gabarito)
+              (drop-entry)
+              (new-iteration)
+              (start-replay-mode)
+              (control-execute-gab (- numero-execucoes 1) gabarito))]
+        
+         [else (drop-entry)]))
+
+
+(define (eval-stmt env cfg)
+  (match cfg
+   [(config numero-execucoes gabarito dir-aluno-exercicios)
+       (begin
+       (control-execute-gab (value-value numero-execucoes) (value-value gabarito))
+       (percorre-path (directory-list (value-value dir-aluno-exercicios))(value-value dir-aluno-exercicios) (value-value numero-execucoes)))]))
+
+(define (imp-spcf-interp cfg)
+  (eval-stmt (make-immutable-hash) cfg))
+
+(provide imp-spcf-interp eval-expr)

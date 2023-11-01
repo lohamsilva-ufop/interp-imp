@@ -57,7 +57,8 @@
     [(equal? iteration 0)
      (begin
       (last-eval-prog (parse (open-input-string res)) ast)
-     (show-table))]))
+     (show-table)
+     (consolidade-record-inputs))]))
 
 (define (insert-value-table ev v)
   (hash-set!  new-temp-table (evar-id ev) (value-value v))

@@ -1,0 +1,85 @@
+#lang racket
+
+(require "syntax.rkt")
+
+;premissa1: expressao reduz ao valor
+;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
+;a atribuição reduz para um novo ambiente (new-env)
+(define (eval-assign env v e table  list-out)
+   (let ([nenv (hash-set env (evar-id v) (eval-expr env e))])
+   (cons nenv (cons table  list-out))))
+
+;premissa: expressão reduz a um valor
+;conclusao: reduz ao ambiente
+(define (search-value env v)
+  (let ([value (hash-ref env (evar-id v))]) value))
+
+(define (read-value env v1 e1 table list-out)
+  (let* ([list-values (hash-ref table (evar-id v1))]
+         [value (car list-values)]
+         [nenv (hash-set env (evar-id v1) value)])
+         (displayln value)
+         (hash-set! table (evar-id v1) (cdr list-values))
+     (cons nenv (cons table list-out))))
+
+(define (eval-if env econd then-block else-block table  list-out)
+  (let ([result-econd (eval-expr env econd)])
+     (if result-econd
+         (eval-stmts env then-block table list-out)
+         (eval-stmts env else-block table list-out))))
+      
+;para todas as expressões:
+;premissas: expressão reduz a um valor
+;conclusoes: operações sobre os valores.
+(define (eval-expr env e)
+  (match e
+   [(add e1 e2)  (+ (eval-expr env e1) (eval-expr env e2))]
+   [(minus e1 e2)(- (eval-expr env e1) (eval-expr env e2))]
+   [(mult e1 e2) (* (eval-expr env e1) (eval-expr env e2))]
+   [(divv e1 e2) (/ (eval-expr env e1) (eval-expr env e2))]
+   [(esqrt e1) (sqrt (eval-expr env e1))]
+   [(mod e1 e2)  (remainder (eval-expr env e1) (eval-expr env e2))]
+   [(lt e1 e2)   (< (eval-expr env e1) (eval-expr env e2))]
+   [(bt e1 e2)   (> (eval-expr env e1) (eval-expr env e2))]
+   [(lte e1 e2)  (<= (eval-expr env e1) (eval-expr env e2))]
+   [(bte e1 e2)  (>= (eval-expr env e1) (eval-expr env e2))]
+   [(eeq e1 e2)  (eq? (eval-expr env e1) (eval-expr env e2))]
+   [(eand e1 e2) (and (eval-expr env e1) (eval-expr env e2))]
+   [(eor e1 e2)  (or (eval-expr env e1) (eval-expr env e2))]
+   [(enot e1) (not (eval-expr env e1))]
+   [(evar e1) (search-value env (evar e1))]
+   [(value val) val]))
+
+(define (eval-stmt env s table list-out)
+  (match s
+    [(eassign v e1) (eval-assign env v e1 table list-out)]
+    [(sprint e1)
+     (let ([v (eval-expr env e1)])
+       (let ([newlist (cons v list-out)])
+         ;(displayln v)
+          (cons env (cons table newlist))))]
+    [(input v1 e1) (read-value env v1 e1 table list-out)]
+    [(eif econd then-block else-block) (eval-if env econd then-block else-block table  list-out)]))
+
+(define (eval-stmts env blk table list-out)
+  (match blk
+    ['() (cons env (cons table list-out))]
+    [(cons s blks) (begin
+                     (let* ([new-triple (eval-stmt env s table list-out)]
+                            [nenv   (car new-triple)]
+                            [newtable (car (cdr new-triple))]
+                            [newlist (cdr (cdr new-triple))])
+                            (eval-stmts nenv blks newtable newlist)))]))
+
+(define (temp-python-interp prog nexec fix-table edit-table list-out)
+  (if (equal? nexec 0)
+  (displayln fix-table)
+  ;(displayln fix-table)
+  (let*
+       ([triple (eval-stmts (make-immutable-hash) prog edit-table list-out)]
+        [new-table (car (cdr triple))]
+        [new-list (cdr (cdr triple))])
+       (displayln new-list)
+       (temp-python-interp prog (- nexec 1) fix-table new-table new-list))))
+
+(provide temp-python-interp eval-expr)

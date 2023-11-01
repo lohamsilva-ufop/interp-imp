@@ -1,10 +1,6 @@
 #lang racket
 
 (require "../parser.rkt"
-         "../interp.rkt"
-         "../syntax.rkt"
-         "./gen-evars/definitions.rkt"
-         "./gen-evars/gen.rkt"
          "./gen-econds/gen-script.rkt"
          "./gen-econds/definitions.rkt")
 
@@ -25,7 +21,7 @@
               ;[env (python-interp ast)])
               ;[scz3 (get-read ctx ast)])
          ;(build-ifs-script ast ctx)))))
-          (execute-gen-script-econds ast (get-eifs ast) "" (make-immutable-hash))))))
+          (execute-gen-script-econds ast (get-eifs ast) "")))))
     
 
 (define (finish env)

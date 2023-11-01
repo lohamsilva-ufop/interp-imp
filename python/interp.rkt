@@ -70,7 +70,6 @@
 
 (define (eval-stmt env s)
   (match s
-   ; [(assign t v e1) (eval-assign env v e1)]
     [(eassign v e1) (eval-assign env v e1)]
     [(sprint e1)
      (let ([v (eval-expr env e1)])
@@ -78,7 +77,6 @@
          (displayln  v)
          env))]
     [(input v1 e1) (read-value env v1 e1)]
-    ;[(read-v v1) (read-value env v1)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block)]))
 
 (define (eval-stmts env blk)

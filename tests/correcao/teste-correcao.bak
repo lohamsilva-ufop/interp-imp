@@ -1,0 +1,5 @@
+#lang interp-imp/python/especificacao/conf
+
+quantidade-execucoes: 5;
+gabarito: ;
+dir-aluno-exercicios: ;

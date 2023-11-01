@@ -29,29 +29,6 @@
          (eval-stmts env then-block)
          (eval-stmts env else-block))))
 
-(define (eval-if-with-elif env econd then-block elif)
-  (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (begin
-         (eval-stmts env then-block)
-         (eval-stmts env elif))
-         (eval-stmts env elif))))
-
-(define (eval-if-with-elif-with-else env econd then-block elif else-block)
-   (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (begin
-         (eval-stmts env then-block)
-         (eval-stmts env elif))
-         (eval-stmts env elif))))
-
-
-(define (eval-if-only-then env econd then-block)
-  (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (eval-stmts env then-block)
-          env)))
-
 (define (eval-while env econd block)
   (let ([result-econd (eval-expr env econd)])
      (if result-econd
@@ -102,13 +79,7 @@
          env))]
     [(input v1 e1) (read-value env v1 e1)]
     ;[(read-v v1) (read-value env v1)]
-    [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
-
-    [(eif-with-elif econd then-block elif) (eval-if-with-elif env econd then-block (list elif))]
-
-    [(eif-with-elif-with-else econd then-block elif else-block) (eval-if-with-elif-with-else env econd then-block (list elif) else-block)]
-
-    [(eif-only-then econd then-block) (eval-if-only-then env econd then-block)]))
+    [(eif econd then-block else-block) (eval-if env econd then-block else-block)]))
 
 (define (eval-stmts env blk)
   (match blk
