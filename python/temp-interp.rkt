@@ -2,6 +2,17 @@
 
 (require "syntax.rkt")
 
+(define int-table (make-hash))
+
+(define (consolidade-int-table)
+  (make-hash (hash-map int-table (lambda (k v) (cons k (reverse v))))))
+
+(define (insert-int-table ev v)
+  (if (hash-has-key? int-table ev)
+  (let ([old-value (hash-ref int-table ev)])
+  (hash-set! int-table ev (cons v old-value)))
+  (hash-set! int-table ev (list v))))
+
 ;premissa1: expressao reduz ao valor
 ;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
 ;a atribuição reduz para um novo ambiente (new-env)
@@ -18,7 +29,7 @@
   (let* ([list-values (hash-ref table (evar-id v1))]
          [value (car list-values)]
          [nenv (hash-set env (evar-id v1) value)])
-         (displayln value)
+         (insert-int-table (evar-id v1) value)
          (hash-set! table (evar-id v1) (cdr list-values))
      (cons nenv (cons table list-out))))
 
@@ -56,7 +67,6 @@
     [(sprint e1)
      (let ([v (eval-expr env e1)])
        (let ([newlist (cons v list-out)])
-         ;(displayln v)
           (cons env (cons table newlist))))]
     [(input v1 e1) (read-value env v1 e1 table list-out)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block table  list-out)]))
@@ -71,15 +81,13 @@
                             [newlist (cdr (cdr new-triple))])
                             (eval-stmts nenv blks newtable newlist)))]))
 
-(define (temp-python-interp prog nexec fix-table edit-table list-out)
+(define (temp-python-interp prog nexec table list-out)
   (if (equal? nexec 0)
-  (displayln fix-table)
-  ;(displayln fix-table)
+  (cons (consolidade-int-table) list-out)
   (let*
-       ([triple (eval-stmts (make-immutable-hash) prog edit-table list-out)]
+       ([triple (eval-stmts (make-immutable-hash) prog table list-out)]
         [new-table (car (cdr triple))]
         [new-list (cdr (cdr triple))])
-       (displayln new-list)
-       (temp-python-interp prog (- nexec 1) fix-table new-table new-list))))
+       (temp-python-interp prog (- nexec 1) new-table new-list))))
 
 (provide temp-python-interp eval-expr)

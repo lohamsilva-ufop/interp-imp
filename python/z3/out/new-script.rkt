@@ -57,7 +57,9 @@
     [(equal? iteration 0)
      (begin
       (last-eval-prog (parse (open-input-string res)) ast)
+     (displayln "Tabela de entradas do gabarito: ")
      (show-table)
+     (displayln "")
      (consolidade-record-inputs))]))
 
 (define (insert-value-table ev v)
