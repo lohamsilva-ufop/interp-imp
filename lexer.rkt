@@ -12,6 +12,10 @@
    PRODUCT
    DIVISION
    LT
+   BT
+   LTE
+   BTE
+   DIFF
    EQ
    ASSIGN
    NOT
@@ -46,6 +50,10 @@
    [#\* (token-PRODUCT)]
    [#\/ (token-DIVISION)]
    [#\< (token-LT)]
+   [#\> (token-BT)]
+   ["<=" (token-LTE)]
+   ["<=" (token-BTE)]
+   ["!=" (token-DIFF)]
    ["==" (token-EQ)]
    [":=" (token-ASSIGN)]
    ["!"  (token-NOT)]

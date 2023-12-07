@@ -2,15 +2,19 @@
 
 (require "syntax.rkt"
          "../parser.rkt"
+         "../../parse-python/lex+yacc.rkt"
          "../temp-interp.rkt"
          "../z3/gen-econds/gen-script.rkt"
          "../z3/gen-econds/definitions.rkt")
 
-(define (return-tree-syntax path)
+(define (return-tree-syntax-old path)
   (let* ([port  (open-input-file path)]
                 [text  (string-replace (read-string 1000 port) "#lang interp-imp/python/z3/testz3" "")]
                 [ast (parse (open-input-string text))])
     (parse (open-input-string text))))
+
+(define (return-tree-syntax path)
+  (build-ast-from-file path))
 
 (define (correction list-out-gabarito list-out-ex-alunos)
   (if (equal? list-out-gabarito list-out-ex-alunos)

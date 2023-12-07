@@ -12,6 +12,10 @@
    PRODUCT
    DIVISION
    LT
+   BT
+   LTE
+   BTE
+   DIFF
    EQ
    ASSIGN
    NOT
@@ -30,6 +34,7 @@
    END
    PRINT
    INPUT
+   READ
    INT
    BOOLEAN
    TRUE
@@ -63,6 +68,7 @@
    ["end" (token-END)]
    ["print" (token-PRINT)]
    ["input" (token-INPUT)]
+   ["read" (token-READ)]
    ["int" (token-INT)]
    ["boolean" (token-BOOLEAN)]
    ["true" (token-TRUE)]

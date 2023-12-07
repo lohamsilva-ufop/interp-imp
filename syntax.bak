@@ -42,9 +42,26 @@
   (left right)
   #:transparent)
 
+(struct bt
+  (left right)
+  #:transparent)
+
+(struct lte
+  (left right)
+  #:transparent)
+
+(struct bte
+  (left right)
+  #:transparent)
+
 (struct eand
   (left right)
   #:transparent)
+
+(struct eor
+   (left right)
+  #:transparent)
+
 
 (struct enot
   (arg)

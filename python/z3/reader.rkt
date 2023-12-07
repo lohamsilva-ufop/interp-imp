@@ -2,7 +2,8 @@
 
 (require "../parser.rkt"
          "./gen-econds/gen-script.rkt"
-         "./gen-econds/definitions.rkt")
+         "./gen-econds/definitions.rkt"
+         "../../parse-python/lex+yacc.rkt")
 
 (provide (rename-out [imp-read read]
                      [imp-read-syntax read-syntax]))

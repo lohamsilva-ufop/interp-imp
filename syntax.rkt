@@ -54,6 +54,10 @@
   (left right)
   #:transparent)
 
+(struct diff
+  (left right)
+  #:transparent)
+
 (struct eand
   (left right)
   #:transparent)
