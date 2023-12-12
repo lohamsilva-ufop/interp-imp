@@ -6,7 +6,8 @@
            racket/class
            racket/contract
            racket/format
-           "../syntax.rkt")
+           "../syntax.rkt"
+           "../python/z3/gen-econds/definitions.rkt")
         
   (provide/contract
    (build-ast (input-port? . -> . any))

@@ -2,50 +2,43 @@
 
 (require "syntax.rkt")
 
+(define int-table (make-hash))
+
+(define (consolidade-int-table)
+  (make-hash (hash-map int-table (lambda (k v) (cons k (reverse v))))))
+
+(define (insert-int-table ev v)
+  (if (hash-has-key? int-table ev)
+  (let ([old-value (hash-ref int-table ev)])
+  (hash-set! int-table ev (cons v old-value)))
+  (hash-set! int-table ev (list v))))
+
 ;premissa1: expressao reduz ao valor
 ;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
 ;a atribuição reduz para um novo ambiente (new-env)
-(define (eval-assign env v e)
-  (hash-set env (evar-id v) (eval-expr env e)))
+(define (eval-assign env v e table  list-out)
+   (let ([nenv (hash-set env (evar-id v) (eval-expr env e))])
+   (cons nenv (cons table  list-out))))
 
 ;premissa: expressão reduz a um valor
 ;conclusao: reduz ao ambiente
 (define (search-value env v)
   (let ([value (hash-ref env (evar-id v))]) value))
 
-;(define (read-value env v1)
- ; (let ([x (read)])
-  ;   (display (hash-set env (evar-id v1) x))))
+(define (read-value env v1 e1 table list-out)
+  (let* ([list-values (hash-ref table (evar-id v1))]
+         [value (car list-values)]
+         [nenv (hash-set env (evar-id v1) value)])
+         (insert-int-table (evar-id v1) value)
+         (hash-set! table (evar-id v1) (cdr list-values))
+     (cons nenv (cons table list-out))))
 
-(define (read-value env v1 e1)
-  (begin
-    (displayln (eval-expr env e1))
-   (let ([x (read)])
-     (hash-set env (evar-id v1) x))))
-
-(define (eval-if env econd then-block else-block)
+(define (eval-if env econd then-block else-block table  list-out)
   (let ([result-econd (eval-expr env econd)])
      (if result-econd
-         (eval-stmts env then-block)
-         (eval-stmts env else-block))))
-
-(define (eval-while env econd block)
-  (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (begin
-           (let ([nenv (eval-stmts env block)])
-           (eval-while nenv econd block)))
-          env)))
-
-(define (eval-for env block init end)
-  (if (< init end)
-      (begin
-        (let ([nenv (eval-stmts env block)]
-              [init (+ init 1)])
-            (eval-for nenv block init end)))
-      env))
-
-         
+         (eval-stmts env then-block table list-out)
+         (eval-stmts env else-block table list-out))))
+      
 ;para todas as expressões:
 ;premissas: expressão reduz a um valor
 ;conclusoes: operações sobre os valores.
@@ -68,26 +61,33 @@
    [(evar e1) (search-value env (evar e1))]
    [(value val) val]))
 
-(define (eval-stmt env s)
+(define (eval-stmt env s table list-out)
   (match s
-    [(eassign v e1) (eval-assign env v e1)]
+    [(eassign v e1) (eval-assign env v e1 table list-out)]
     [(sprint e1)
      (let ([v (eval-expr env e1)])
-       (begin
-         (displayln  v)
-         env))]
-    [(input v1 e1) (read-value env v1 e1)]
-    [(eif econd then-block else-block) (eval-if env econd then-block else-block)]))
+       (let ([newlist (cons v list-out)])
+          (cons env (cons table newlist))))]
+    [(input v1) (read-value env v1 table list-out)]
+    [(eif econd then-block else-block) (eval-if env econd then-block else-block table  list-out)]))
 
-(define (eval-stmts env blk)
+(define (eval-stmts env blk table list-out)
   (match blk
-    ['() env]
-    [(cons s blks) (let ([nenv (eval-stmt env s)])
-                       (eval-stmts nenv blks))]))
+    ['() (cons env (cons table list-out))]
+    [(cons s blks) (begin
+                     (let* ([new-triple (eval-stmt env s table list-out)]
+                            [nenv   (car new-triple)]
+                            [newtable (car (cdr new-triple))]
+                            [newlist (cdr (cdr new-triple))])
+                            (eval-stmts nenv blks newtable newlist)))]))
 
-(define (python-interp prog)
-  (eval-stmts (make-immutable-hash) prog))
+(define (temp-python-interp prog nexec table list-out)
+  (if (equal? nexec 0)
+  (cons (consolidade-int-table) list-out)
+  (let*
+       ([triple (eval-stmts (make-immutable-hash) prog table list-out)]
+        [new-table (car (cdr triple))]
+        [new-list (cdr (cdr triple))])
+       (temp-python-interp prog (- nexec 1) new-table new-list))))
 
-(provide python-interp eval-expr)
-
-
+(provide temp-python-interp eval-expr)

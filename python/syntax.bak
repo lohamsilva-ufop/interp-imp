@@ -78,7 +78,7 @@
   #:transparent)
 
 (struct input
-  (var expr)
+  (var)
   #:transparent)
 
 (struct sprint
@@ -92,10 +92,5 @@
 (struct eif
   (econd then-block else-block)
   #:transparent)
-
-(struct elif
-  (econd block)
-  #:transparent)
-
 
 (provide (all-defined-out))
