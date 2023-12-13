@@ -11,6 +11,7 @@
    SUBTRACT
    PRODUCT
    DIVISION
+   MOD
    LT
    BT
    LTE
@@ -20,6 +21,7 @@
    ASSIGN
    NOT
    AND
+   OR
    SEMI
    LPAREN
    RPAREN
@@ -49,6 +51,7 @@
    [#\- (token-SUBTRACT)]
    [#\* (token-PRODUCT)]
    [#\/ (token-DIVISION)]
+   [#\% (token-MOD)]
    [#\< (token-LT)]
    [#\> (token-BT)]
    ["<=" (token-LTE)]
@@ -58,6 +61,7 @@
    [":=" (token-ASSIGN)]
    ["!"  (token-NOT)]
    ["&&" (token-AND)]
+   ["or" (token-OR)]
    [";"  (token-SEMI)]
    ["("  (token-LPAREN)]
    [")"  (token-RPAREN)]

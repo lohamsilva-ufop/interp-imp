@@ -22,15 +22,14 @@
    (grammar
     (statements [() '()]
                 [(statement statements) (cons $1 $2)])
-    (statement [(type IDENTIFIER ASSIGN expr SEMI) (assign $1 (evar $2) $4)]
-               [(IDENTIFIER ASSIGN expr SEMI) (eassign (evar $1) $3)]
+    (statement [(IDENTIFIER ASSIGN expr SEMI) (eassign (evar $1) $3)]
                [(PRINT expr SEMI) (sprint $2)]
                [(READ IDENTIFIER SEMI) (read-v (evar $2))]
                [(IF expr THEN block ELSE block) (eif $2 $4 $6)]
                [(WHILE expr DO block) (ewhile $2 $4)]
                [(FOR init TO expr DO block) (efor $2 $4 $6)]
                [(INPUT IDENTIFIER SEMI) (input (evar $2))])
-    (init [(type IDENTIFIER ASSIGN expr) (assign $1 (evar $2) $4)])
+    (init [(IDENTIFIER ASSIGN expr) (eassign (evar $1) $3)])
     (block [(BEGIN statements END) $2])
     (expr  [(NUMBER) (value $1)]
            [(IDENTIFIER) (evar $1)]
@@ -40,14 +39,17 @@
            [(expr SUBTRACT expr) (minus $1 $3)]
            [(expr PRODUCT expr) (mult $1 $3)]
            [(expr DIVISION expr) (divv $1 $3)]
+           [(expr MOD expr) (mod $1 $3)]
+           ;[(SQRT LPAREN expr RPAREN) (esqrt $3)]
            [(expr LT expr) (lt $1 $3)]
+           [(expr BT expr) (bt $1 $3)]
+           [(expr LTE expr) (lte $1 $3)]
+           [(expr BTE expr) (bte $1 $3)]
            [(expr EQ expr) (eeq $1 $3)]
            [(expr AND expr) (eand $1 $3)]
+           [(expr OR expr) (eor $1 $3)]
            [(NOT expr) (enot $2)]
-           [(LPAREN expr RPAREN) $2])
-
-    (type [(INT) (type 'int)]
-          [(BOOLEAN) (type 'boolean)]))))
+           [(LPAREN expr RPAREN) $2]))))
 
 (define (parse ip)
   (imp-parser (lambda () (next-token ip))))

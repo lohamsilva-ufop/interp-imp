@@ -1,86 +1,80 @@
 #lang racket
+(require racket/date)
+(require "syntax.rkt"
+         "parser.rkt"
+         "../simbolic-table.rkt"
+         "new-script.rkt"
+         "../gen-script/script-generator.rkt"
+         "../gen-atr/gen-atr-script.rkt")
 
-(require "syntax.rkt")
+(define temp-table (make-hash))
 
-;premissa1: expressao reduz ao valor
-;premissa2: um novo ambiente é a composição do ambiente união (par - identificador e valor)
-;a atribuição reduz para um novo ambiente (new-env)
-(define (eval-assign env v e)
-  (hash-set env (evar-id v) (value-value e)))
+(define (create-script-file text-script)
+   (let*  ([path-file (string->path (string-append "../../python/z3/scripts/econd/script_" (~a (random (date->seconds (current-date)))) ".z3"))]
+           [out (open-output-file path-file
+                                  #:mode 'text
+                                  #:exists 'replace)])
+     (begin
+      (displayln text-script out)
+      (close-output-port out)
+      path-file)))
 
-;premissa: expressão reduz a um valor
-;conclusao: reduz ao ambiente
-(define (search-value env v)
-  (let ([value (hash-ref env (evar-id v))]) value))
+(define (execute-script text-script)
+  (begin
+  (let*  ([script-file (create-script-file text-script)]
+          [cmd (string-append "z3 " (path->string script-file))]
+          [res (with-output-to-string (lambda () (system cmd)))])
+           (begin
+           (displayln text-script)
+           (displayln res)
+           res))))
 
-(define (read-value env v1)
-  (let ([x (read)])
-      (hash-set env (evar-id v1) x)))
+(define (build-text-script str ast)
+ (execute-script (string-append
+    (get-assign ast "")
+     str
+     "(check-sat) "
+     "(get-model)")))
 
-(define (eval-if env econd then-block else-block)
-  (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (eval-stmts env then-block)
-         (eval-stmts env else-block))))
 
-(define (eval-while env econd block)
-  (let ([result-econd (eval-expr env econd)])
-     (if result-econd
-         (begin
-           (let ([nenv (eval-stmts env block)])
-           (eval-while nenv econd block)))
-          env)))
+(define (build-script table-in-list str)
+  (match table-in-list
+    ['() str]
+    [(cons first rest) (let
+                           ([new-str (string-append "(assert (not (= " (~a (car first)) " " (~a (cdr first)) "))) "  str)])
+                             (build-script rest new-str))])) 
 
-(define (eval-for env block init end)
-  (if (< init end)
-      (begin
-        (let ([nenv (eval-stmts env block)]
-              [init (+ init 1)])
-            (eval-for nenv block init end)))
-      env))
+(define (update-value-table script iteration ast)
+  (let* ([table-in-list (hash->list temp-table)]
+         [new-str (build-script table-in-list "")]
+         [res (build-text-script new-str ast)])
+    (repeat-script res ast 3)))
 
-         
-;para todas as expressões:
-;premissas: expressão reduz a um valor
-;conclusoes: operações sobre os valores.
-(define (eval-expr env e)
-  (match e
-   [(add e1 e2)  (+ (eval-expr env e1) (eval-expr env e2))]
-   [(minus e1 e2)(- (eval-expr env e1) (eval-expr env e2))]
-   [(mult e1 e2) (* (eval-expr env e1) (eval-expr env e2))]
-   [(divv e1 e2) (/ (eval-expr env e1) (eval-expr env e2))]
-   [(lt e1 e2)   (< (eval-expr env e1) (eval-expr env e2))]
-   [(eeq e1 e2)  (eq? (eval-expr env e1) (eval-expr env e2))]
-   [(eand e1 e2) (and (eval-expr env e1) (eval-expr env e2))]
-   [(enot e1) (not (eval-expr env e1))]
-   [(evar e1) (search-value env (evar e1))]
-   [(value val) val]))
+(define (insert-value-table ev v)
+  (begin
+  (hash-set!  temp-table (evar-id ev) (value-value v))
+  (insert-simbolic-table (evar-id ev) (value-value v))))
 
-(define (eval-stmt env s)
+(define (eval-stmt s)
   (match s
-    [(assign t v e1) (eval-assign env v e1)]
-    ;[(eassign v e1) (eval-assign env v e1)]
-    [(sprint e1)
-     (let ([v (eval-expr env e1)])
-       (begin
-         (displayln  v)
-         env))]
-    [(read-v v1) (read-value env v1)]              
-    [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
-    [(ewhile econd block) (eval-while env econd block)]
-    [(efor (assign t v ex) e1 block)
-        (let* ([nenv (eval-stmt env (assign t v ex))]
-              [init (eval-expr nenv ex)]
-              [end  (eval-expr nenv e1)])
-          (eval-for nenv block init end))]))
+    [(define-const-vars ev t v) (insert-value-table ev v)]
+    [(sat-unsat v) ""]))
 
-(define (eval-stmts env blk)
+(define (eval-prog blk ast)
   (match blk
-    ['() env]
-    [(cons s blks) (let ([nenv (eval-stmt env s)])
-                       (eval-stmts nenv blks))]))
+    ['() '()]
+    [(cons s blks) (begin
+                     (eval-stmt s)
+                     (eval-prog blks ast))]))
 
-(define (imp-interp prog)
-  (eval-stmts (make-immutable-hash) prog))
+(define (eval-stmts blk script ast)
+  (match blk
+    ['() (update-value-table script 4 ast)]
+    [(cons s blks) (begin
+                     (eval-stmt s)
+                     (eval-stmts blks script ast))]))
 
-(provide imp-interp eval-expr)
+(define (outz3-interp prog script ast)
+  (eval-stmts prog script ast))
+
+(provide outz3-interp)

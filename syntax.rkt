@@ -34,6 +34,14 @@
   (left right)
   #:transparent)
 
+(struct mod
+  (left right)
+  #:transparent)
+
+(struct esqrt
+  (value)
+  #:transparent)
+
 (struct eeq
   (left right)
   #:transparent)
@@ -73,10 +81,6 @@
 
 ; statement syntax
 
-(struct assign
-  (type var expr)
-  #:transparent)
-
 (struct eassign
   (var expr)
   #:transparent)
@@ -91,10 +95,6 @@
 
 (struct eif
   (econd then-block else-block)
-  #:transparent)
-
-(struct eif-only-then
-  (econd then-block)
   #:transparent)
 
 (struct ewhile

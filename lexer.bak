@@ -11,6 +11,7 @@
    SUBTRACT
    PRODUCT
    DIVISION
+   MOD
    LT
    BT
    LTE
@@ -50,6 +51,10 @@
    [#\* (token-PRODUCT)]
    [#\/ (token-DIVISION)]
    [#\< (token-LT)]
+   [#\> (token-BT)]
+   ["<=" (token-LTE)]
+   ["<=" (token-BTE)]
+   ["!=" (token-DIFF)]
    ["==" (token-EQ)]
    [":=" (token-ASSIGN)]
    ["!"  (token-NOT)]

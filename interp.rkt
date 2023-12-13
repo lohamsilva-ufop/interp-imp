@@ -77,11 +77,9 @@
          env))]
     [(read-v v1) (read-value env v1)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block)]
-
-    [(eif-only-then econd then-block) (eval-if-only-then env econd then-block)]
     
-    [(ewhile econd block) (eval-while env econd block)]
-    [(efor (assign t v ex) e1 block)
+    #;[(ewhile econd block) (eval-while env econd block)]
+    #;[(efor (assign t v ex) e1 block)
         (let* ([nenv (eval-stmt env (assign t v ex))]
               [init (eval-expr nenv ex)]
               [end  (eval-expr nenv e1)])

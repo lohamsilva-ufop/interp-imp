@@ -1,13 +1,9 @@
 #lang racket
 
-(require "parser.rkt"
-         "interp.rkt"
-         "syntax.rkt"
-         "type-check.rkt"
-         "./gen-evars/definitions.rkt"
-         "./gen-evars/gen.rkt"
+(require "../parser.rkt"
          "./gen-econds/gen-script.rkt"
-         "./gen-econds/definitions.rkt")
+         "./gen-econds/definitions.rkt"
+         "../../parse-python/lex+yacc.rkt")
 
 (provide (rename-out [imp-read read]
                      [imp-read-syntax read-syntax]))
@@ -21,12 +17,8 @@
   (datum->syntax
    #f
    `(module imp-mod racket
-      ,(let* ([ast (parse port)]
-              [ctx (type-check ast)]
-              [env (imp-interp ast)])
-              ;[scz3 (get-read ctx ast)])
-         ;(build-ifs-script ast ctx)))))
-          (execute-gen-script-econds ast (get-eifs ast) "" ctx env)))))
+      ,(let* ([ast (parse port)])
+          (execute-gen-script-econds ast (get-eifs ast) "")))))
     
 
 (define (finish env)

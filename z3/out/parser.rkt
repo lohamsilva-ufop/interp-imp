@@ -22,7 +22,8 @@
     (statement [(LPAREN DEFINE-FUN expr LPAREN RPAREN type expr RPAREN) (define-const-vars $3 $6 $7)]
                [(SAT) (sat-unsat 'sat)]
                [(UNSAT) (sat-unsat 'unsat)])
-    (expr  [(NUMBER) (value $1)]
+    (expr  [(LPAREN SUBTRACT NUMBER RPAREN) (value (- $3))]
+           [(NUMBER) (value $1)]
            [(IDENTIFIER) (evar $1)])
     (type [(INT) (type 'Int)]
           [(BOOLEAN) (type 'Boolean)]))))

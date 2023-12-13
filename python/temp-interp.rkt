@@ -1,6 +1,6 @@
 #lang racket
 
-(require "syntax.rkt")
+(require "../syntax.rkt")
 
 (define int-table (make-hash))
 
@@ -25,7 +25,7 @@
 (define (search-value env v)
   (let ([value (hash-ref env (evar-id v))]) value))
 
-(define (read-value env v1 e1 table list-out)
+(define (read-value env v1 table list-out)
   (let* ([list-values (hash-ref table (evar-id v1))]
          [value (car list-values)]
          [nenv (hash-set env (evar-id v1) value)])
@@ -55,10 +55,12 @@
    [(lte e1 e2)  (<= (eval-expr env e1) (eval-expr env e2))]
    [(bte e1 e2)  (>= (eval-expr env e1) (eval-expr env e2))]
    [(eeq e1 e2)  (eq? (eval-expr env e1) (eval-expr env e2))]
+   [(diff e1 e2) (not (eq? (eval-expr env e1) (eval-expr env e2)))]
    [(eand e1 e2) (and (eval-expr env e1) (eval-expr env e2))]
    [(eor e1 e2)  (or (eval-expr env e1) (eval-expr env e2))]
    [(enot e1) (not (eval-expr env e1))]
    [(evar e1) (search-value env (evar e1))]
+   [(list e1) (eval-expr env e1)]
    [(value val) val]))
 
 (define (eval-stmt env s table list-out)
@@ -68,7 +70,7 @@
      (let ([v (eval-expr env e1)])
        (let ([newlist (cons v list-out)])
           (cons env (cons table newlist))))]
-    [(input v1 e1) (read-value env v1 e1 table list-out)]
+    [(input v1) (read-value env v1 table list-out)]
     [(eif econd then-block else-block) (eval-if env econd then-block else-block table  list-out)]))
 
 (define (eval-stmts env blk table list-out)

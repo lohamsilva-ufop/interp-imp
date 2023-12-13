@@ -2,8 +2,7 @@
 
 (require "parser.rkt"
          "interp.rkt"
-         "syntax.rkt"
-         "type-check.rkt")
+         "syntax.rkt")
 
 (provide (rename-out [imp-read read]
                      [imp-read-syntax read-syntax]))
@@ -17,7 +16,6 @@
    #f
    `(module imp-mod racket
       ,(let ([ast (parse port)])
-      (displayln (type-check ast))
       (finish (imp-interp ast))))))
 
 (define (finish env)

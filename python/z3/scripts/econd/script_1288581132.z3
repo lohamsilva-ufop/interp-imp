@@ -1,1 +1,0 @@
-(declare-const numero Int) (declare-const divisivel10 Int) (assert (= divisivel10 ( mod numero 10)))(declare-const divisivel5 Int) (assert (= divisivel5 ( mod numero 5)))(declare-const divisivel2 Int) (assert (= divisivel2 ( mod numero 2))) (assert (and (not (= divisivel10  0)) (not (= divisivel5  0)) (not (= divisivel2  0)) ))(check-sat) (get-model)
